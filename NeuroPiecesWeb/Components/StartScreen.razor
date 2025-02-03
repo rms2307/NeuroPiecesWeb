@@ -1,0 +1,50 @@
+﻿@using NeuroPiecesWeb.Enums
+<div class="start-screen-container">
+    <div class="start-screen-wrapper">
+        <h1 class="game-title">Sliding Puzzle</h1>
+
+        <div class="difficulty-grid">
+            @foreach (var difficulty in Enum.GetValues<Difficulty>())
+            {
+                <button class="difficulty-button @(SelectedDifficulty == difficulty ? "selected" : "")"
+                        @onclick="() => SelectDifficulty(difficulty)">
+                    @GetDifficultyName(difficulty)
+                </button>
+            }
+        </div>
+
+        <button class="start-button"
+                @onclick="StartGame"
+                disabled="@(SelectedDifficulty == null)">
+            Iniciar Jogo
+        </button>
+    </div>
+</div>
+
+@code {
+    private Difficulty? SelectedDifficulty;
+
+    [Parameter]
+    public EventCallback<Difficulty> OnGameStart { get; set; }
+
+    private void SelectDifficulty(Difficulty difficulty)
+    {
+        SelectedDifficulty = difficulty;
+    }
+
+    private async Task StartGame()
+    {
+        if (SelectedDifficulty.HasValue)
+        {
+            await OnGameStart.InvokeAsync(SelectedDifficulty.Value);
+        }
+    }
+
+    private string GetDifficultyName(Difficulty difficulty) => difficulty switch
+    {
+        Difficulty.Easy => "Fácil",
+        Difficulty.Medium => "Médio",
+        Difficulty.Hard => "Difícil",
+        _ => string.Empty
+    };
+}

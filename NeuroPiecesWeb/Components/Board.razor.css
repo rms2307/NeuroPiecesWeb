@@ -1,0 +1,74 @@
+﻿/* Reset e estilos base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Container principal - mobile first */
+.puzzle-container {
+    width: 100%;
+    padding: 1rem;
+    background: #f3f4f6;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.puzzle-wrapper {
+    width: 100%;
+    max-width: 400px; /* Limite para não ficar muito grande em telas maiores */
+    background: white;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.puzzle-grid {
+    display: grid;
+    grid-template-columns: repeat(var(--num-columns), 1fr);
+    gap: 0.25rem; /* Espaçamento menor para mobile */
+    aspect-ratio: 1; /* Mantém o grid quadrado */
+}
+
+/* Tablets (portrait) */
+@media (min-width: 768px) {
+    .puzzle-wrapper {
+        padding: 1.5rem;
+    }
+
+    .puzzle-grid {
+        gap: 0.5rem;
+    }
+}
+
+/* Desktop e tablets (landscape) */
+@media (min-width: 1024px) {
+    .puzzle-wrapper {
+        padding: 2rem;
+    }
+
+    .puzzle-grid {
+        gap: 0.75rem;
+    }
+}
+
+/* Telas muito grandes */
+@media (min-width: 1536px) {
+    .puzzle-wrapper {
+        max-width: 500px;
+    }
+}
+
+/* Suporte para modo paisagem em mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+    .puzzle-wrapper {
+        max-width: 80vh; /* Ajusta baseado na altura da tela */
+        padding: 0.5rem;
+    }
+
+    .puzzle-grid {
+        gap: 0.25rem;
+    }
+}

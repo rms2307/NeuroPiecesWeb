@@ -1,0 +1,28 @@
+﻿@page "/"
+@using NeuroPiecesWeb.Components
+@using NeuroPiecesWeb.Enums
+
+@if (StartGame)
+{
+    <Board Difficulty="@Difficulty" OnRestartGame="@HandleRestartGame"/>
+}
+else
+{
+    <StartScreen OnGameStart="HandleStartGame" />
+}
+
+@code {
+    private bool StartGame = false;
+    private Difficulty Difficulty = Difficulty.Easy;
+
+    private void HandleStartGame(Difficulty difficulty)
+    {
+        Difficulty = difficulty;
+        StartGame = true;
+    }
+
+    private void HandleRestartGame(bool startGame)
+    {
+        StartGame = startGame;
+    }
+}

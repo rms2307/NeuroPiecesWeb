@@ -1,0 +1,144 @@
+﻿<div class="modal-backdrop show">
+    <div class="modal-container">
+        <div class="modal-content">
+            <h2 class="victory-title">Parabéns!</h2>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">@TimeSpent</div>
+                    <div class="stat-label">Tempo</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">@MovesCount</div>
+                    <div class="stat-label">Movimentos</div>
+                </div>
+            </div>
+
+            <div class="button-container">
+                <button class="modal-button primary-button" @onclick="OnPlayAgain">
+                    Jogar Novamente
+                </button>
+                <button class="modal-button secondary-button" @onclick="OnMainMenu">
+                    Menu Principal
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@code {
+    [Parameter]
+    public string TimeSpent { get; set; } = string.Empty;
+    [Parameter]
+    public int MovesCount { get; set; } = 10;
+    [Parameter]
+    public EventCallback OnPlayAgain { get; set; }
+    [Parameter]
+    public EventCallback OnMainMenu { get; set; }
+}
+
+<style>
+    .modal-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0.6);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+    }
+
+        .modal-backdrop.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+    .modal-container {
+        background: #f3f4f6;
+        width: 90%;
+        max-width: 320px;
+        border-radius: 0.75rem;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        transform: translateY(20px);
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+
+    .modal-backdrop.show .modal-container {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    .modal-content {
+        padding: 1.5rem;
+    }
+
+    .victory-title {
+        text-align: center;
+        color: #14b8a6;
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+        margin: 1.25rem 0;
+    }
+
+    .stat-card {
+        background: white;
+        padding: 0.75rem;
+        border-radius: 0.5rem;
+        text-align: center;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .stat-value {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: #10b981;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        color: #6b7280;
+    }
+
+    .button-container {
+        display: grid;
+        gap: 0.75rem;
+        margin-top: 1.5rem;
+    }
+
+    .modal-button {
+        width: 100%;
+        padding: 0.75rem;
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .primary-button {
+        background: #14b8a6;
+        color: white;
+    }
+
+    .secondary-button {
+        background: white;
+        color: #374151;
+        border: 2px solid #e5e7eb;
+    }
+</style>

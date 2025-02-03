@@ -1,0 +1,186 @@
+﻿@using NeuroPiecesWeb.Components
+@using NeuroPiecesWeb.Enums
+
+@if (IsVisibleVictoryModal)
+{
+    <VictoryModal TimeSpent="@TimeSpent" MovesCount="@MoveCount" OnPlayAgain="HandlePlayAgain" OnMainMenu="HandleRestartGame" />
+}
+
+<div class="puzzle-container">
+    <div class="puzzle-wrapper">
+        <div class="puzzle-grid" style="--num-columns: @Pieces.GetLength(0)">
+            @for (int i = 0; i < Pieces.GetLength(0); i++)
+            {
+                for (int j = 0; j < Pieces.GetLength(1); j++)
+                {
+                    <Piece Value="Pieces[i, j]" Row="@i" Column="@j" OnMove="MovePiece" />
+                }
+            }
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public Difficulty Difficulty { get; set; } = Difficulty.Easy;
+    [Parameter]
+    public EventCallback<bool> OnRestartGame { get; set; }
+
+    public DateTime TimeStart;
+    private int[,] Pieces = null!;
+    private int[,] FinalResult = null!;
+    private int EmptyRow;
+    private int EmptyColumn;
+
+    private string TimeSpent = string.Empty;
+    private int MoveCount = 0;
+    private bool IsVisibleVictoryModal = false;
+
+    protected override void OnInitialized()
+    {
+        BuildBoard();
+    }
+
+    private async Task MovePiece((int row, int column) position)
+    {
+        var (row, column) = position;
+
+        if ((Math.Abs(row - EmptyRow) == 1 && column == EmptyColumn) ||
+            (Math.Abs(column - EmptyColumn) == 1 && row == EmptyRow))
+        {
+            Pieces[EmptyRow, EmptyColumn] = Pieces[row, column];
+            Pieces[row, column] = 0;
+            EmptyRow = row;
+            EmptyColumn = column;
+
+            MoveCount++;
+        }
+
+        if (CheckVictory())
+        {
+            TimeSpent = GetTimeSpent();
+
+            ShowVictoryModal();
+        }
+
+        await Task.CompletedTask;
+    }
+
+    private string GetTimeSpent()
+    {
+        TimeSpan timeSpent = DateTime.UtcNow - TimeStart;
+        return $"{(int)timeSpent.TotalHours:D2}:{timeSpent.Minutes:D2}";
+    }
+
+    private void ShowVictoryModal()
+    {
+        IsVisibleVictoryModal = true;
+    }
+
+    private void HandlePlayAgain()
+    {
+        BuildBoard();
+        IsVisibleVictoryModal = false;
+    }
+
+    private async Task HandleRestartGame()
+    {
+        if (OnRestartGame.HasDelegate)
+        {
+            IsVisibleVictoryModal = false;
+            await OnRestartGame.InvokeAsync(false);
+        }
+    }
+
+    private bool CheckVictory()
+    {
+        // for (int i = 0; i < Pieces.GetLength(0); i++)
+        // {
+        //     for (int j = 0; j < Pieces.GetLength(1); j++)
+        //     {
+        //         if (Pieces[i, j] != FinalResult[i, j])
+        //         {
+        //             return false;
+        //         }
+        //     }
+        // }
+
+        return true;
+    }
+
+    private void BuildBoard()
+    {
+        TimeStart = DateTime.UtcNow;
+        int boardSize = GetBoardSizeByDifficulty();
+
+        Pieces = new int[boardSize, boardSize];
+        FinalResult = new int[boardSize, boardSize];
+
+        int currentNumber = 1;
+
+        for (int row = 0; row < boardSize; row++)
+        {
+            for (int col = 0; col < boardSize; col++)
+            {
+                if (row == boardSize - 1 && col == boardSize - 1)
+                {
+                    Pieces[row, col] = 0;
+                    FinalResult[row, col] = 0;
+
+                    EmptyRow = row;
+                    EmptyColumn = col;
+                }
+                else
+                {
+                    Pieces[row, col] = currentNumber;
+                    FinalResult[row, col] = currentNumber;
+
+                    currentNumber++;
+                }
+            }
+
+        }
+
+        Pieces = ShuffleBoard(Pieces, boardSize);
+    }
+
+    private int GetBoardSizeByDifficulty()
+    {
+        switch (Difficulty)
+        {
+            case Difficulty.Easy:
+                return 3;
+            case Difficulty.Medium:
+                return 4;
+            case Difficulty.Hard:
+                return 5;
+            default:
+                return 3;
+        }
+    }
+
+    private int[,] ShuffleBoard(int[,] board, int boardSize)
+    {
+        Random random = new();
+        int totalElements = boardSize * boardSize - 1; // -1 para não incluir a última posição.
+
+        for (int i = totalElements - 1; i > 0; i--)
+        {
+            // Converte índice linear para coordenadas da matriz
+            int currentRow = i / boardSize;
+            int currentCol = i % boardSize;
+
+            // Gera posição aleatória
+            int randomPosition = random.Next(i + 1);
+            int randomRow = randomPosition / boardSize;
+            int randomCol = randomPosition % boardSize;
+
+            // Troca os elementos
+            int temp = board[currentRow, currentCol];
+            board[currentRow, currentCol] = board[randomRow, randomCol];
+            board[randomRow, randomCol] = temp;
+        }
+
+        return board;
+    }
+}
