@@ -1,13 +1,27 @@
-﻿@using NeuroPiecesWeb.Components
-@using NeuroPiecesWeb.Enums
-
-@if (IsVisibleVictoryModal)
-{
-    <VictoryModal TimeSpent="@TimeSpent" MovesCount="@MoveCount" OnPlayAgain="HandlePlayAgain" OnMainMenu="HandleRestartGame" />
-}
+﻿@using NeuroPiecesWeb.Enums
 
 <div class="puzzle-container">
+
+    @if (IsVisibleVictoryModal)
+    {
+        <VictoryModal TimeSpent="@TimeSpent" MovesCount="@MoveCount" OnPlayAgain="HandlePlayAgain" OnMainMenu="HandleRestartGame" />
+    }
+    @if (IsVisibleQuitModal)
+    {
+        <QuitModal OnContinuePlayGame="HandleContinuePlay" OnQuitGame="HandleRestartGame" />
+    }
+
     <div class="puzzle-wrapper">
+
+        <div class="button-wrapper">
+            <button class="modal-button primary-button" @onclick="HandleRestartGame">
+                Salvar Jogo
+            </button>
+            <button class="modal-button secondary-button" @onclick="HandleQuitGame">
+                Sair do Jogo
+            </button>
+        </div>
+
         <div class="puzzle-grid" style="--num-columns: @Pieces.GetLength(0)">
             @for (int i = 0; i < Pieces.GetLength(0); i++)
             {
@@ -18,6 +32,7 @@
             }
         </div>
     </div>
+
 </div>
 
 @code {
@@ -35,6 +50,8 @@
     private string TimeSpent = string.Empty;
     private int MoveCount = 0;
     private bool IsVisibleVictoryModal = false;
+
+    private bool IsVisibleQuitModal = false;
 
     protected override void OnInitialized()
     {
@@ -56,6 +73,8 @@
             MoveCount++;
         }
 
+        SaveTheGame();
+
         if (CheckVictory())
         {
             TimeSpent = GetTimeSpent();
@@ -64,6 +83,11 @@
         }
 
         await Task.CompletedTask;
+    }
+
+    private void SaveTheGame()
+    {
+
     }
 
     private string GetTimeSpent()
@@ -90,6 +114,16 @@
             IsVisibleVictoryModal = false;
             await OnRestartGame.InvokeAsync(false);
         }
+    }
+
+    private void HandleQuitGame()
+    {
+        IsVisibleQuitModal = true;
+    }
+
+    private void HandleContinuePlay()
+    {
+        IsVisibleQuitModal = false;
     }
 
     private bool CheckVictory()
