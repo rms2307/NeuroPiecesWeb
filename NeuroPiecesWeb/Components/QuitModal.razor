@@ -1,0 +1,16 @@
+﻿<div class="modal-overlay">
+    <div class="modal">
+        <p class="modal-text">Você tem certeza que deseja sair?</p>
+        <div class="button-wrapper">
+            <button class="modal-button primary-button" @onclick="OnQuitGame">Sim</button>
+            <button class="modal-button secondary-button" @onclick="OnContinuePlayGame">Não</button>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public EventCallback OnContinuePlayGame { get; set; }
+    [Parameter]
+    public EventCallback OnQuitGame { get; set; }
+}
